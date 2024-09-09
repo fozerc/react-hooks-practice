@@ -1,20 +1,31 @@
 import {useState} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-    const [item, setItem] = useState(1)
-    const decreaseItem = () => setItem(item - 1)
-    const increaseItem = () => setItem(item + 1)
+const useInput = (initialValue, validator) => {
+    const [value, setValue] = useState(initialValue)
+    const onChange = (event) => {
+        const {target: {value}} = event
+        let willUpdate = true
+        if (typeof validator === 'function') {
+            willUpdate = validator(value)
+        }
+        if (willUpdate) {
+            setValue(value)
+        }
+    }
+    return {value, onChange}
+};
 
+function App() {
+    const maxLength = (value) => value.length < 10
+    const checkAt = (value) => !value.includes("@", 1)
+    const name = useInput('Mr.', maxLength)
+    const email = useInput('email', checkAt)
     return (
         <>
             <div>Practice</div>
-            <p>{item}</p>
-
-            <button onClick={increaseItem}>Увеличить</button>
-            <button onClick={decreaseItem}>Уменьшить</button>
+            <input placeholder="Name" {...name}/>
+            <input placeholder="Name" {...email}/>
         </>
     )
 }
