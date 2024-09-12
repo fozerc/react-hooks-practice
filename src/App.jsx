@@ -66,6 +66,23 @@ const useClick = (onClick) => {
     return element;
 }
 
+const useConfirm = (message = '', onConfirm, onCancel) => {
+    if (!onConfirm || typeof onConfirm !== 'function') {
+        return
+    }
+    if (onCancel && typeof onCancel !== 'function') {
+        return
+    }
+    const confirmAction = () => {
+        if (confirm(message)) {
+            onConfirm()
+        } else {
+            onCancel()
+        }
+    }
+    return confirmAction
+}
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -76,6 +93,9 @@ function App() {
     const email = useInput('email', checkAt)
     const sayHello = () => console.log("Hello!")
     const button = useClick(sayHello)
+    const abort = () => console.log("отменяем удаление")
+    const confirmDelete = () => console.log('удаляем всё на свете...')
+    const deleteAll = useConfirm('вы точно хотите всё удалить?', confirmDelete, abort)
     return (
         <>
             <div>Practice</div>
@@ -89,6 +109,10 @@ function App() {
             <input placeholder="Name" {...email}/>
             <div className={"input_container"}>
                 <button ref={button}>Click!</button>
+            </div>
+            <div className={"button_container"}>
+                <h1>Here you can delete all</h1>
+                <button onClick={deleteAll}>нажми чтобы всё удалить</button>
             </div>
         </>
     )
