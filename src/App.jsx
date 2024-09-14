@@ -83,6 +83,16 @@ const useConfirm = (message = '', onConfirm, onCancel) => {
     return confirmAction
 }
 
+const usePreventLeave = () => {
+    const listener = (event) => {
+        event.preventDefault()
+        event.returnValue = ""
+    }
+    const disablePrevent = () => window.removeEventListener('beforeunload', listener)
+    const enablePrevent = () => window.addEventListener('beforeunload', listener)
+    return {enablePrevent, disablePrevent}
+}
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -96,6 +106,7 @@ function App() {
     const abort = () => console.log("отменяем удаление")
     const confirmDelete = () => console.log('удаляем всё на свете...')
     const deleteAll = useConfirm('вы точно хотите всё удалить?', confirmDelete, abort)
+    const {enablePrevent, disablePrevent} = usePreventLeave()
     return (
         <>
             <div>Practice</div>
@@ -113,6 +124,10 @@ function App() {
             <div className={"button_container"}>
                 <h1>Here you can delete all</h1>
                 <button onClick={deleteAll}>нажми чтобы всё удалить</button>
+            </div>
+            <div className={"leave_container"}>
+                <button onClick={enablePrevent}>включить защиту</button>
+                <button onClick={disablePrevent}>отключить защиту</button>
             </div>
         </>
     )
