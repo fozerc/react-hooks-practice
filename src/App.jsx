@@ -93,6 +93,34 @@ const usePreventLeave = () => {
     return {enablePrevent, disablePrevent}
 }
 
+const useBeforLeave = (onBefore) => {
+    if (typeof onBefore !== "function") {
+        return
+    }
+    const handler = (event) => {
+        const {clientY} = event
+        if (clientY <= 0) {
+            onBefore()
+        }
+    };
+    useEffect(() => {
+        document.addEventListener('mouseleave', handler)
+        return () => document.removeEventListener('mouseleave', handler)
+    }, [])
+}
+
+const useFadeIn = (duration = 1, delay = 0) => {
+    const element = useRef()
+    useEffect(() => {
+        if (element.current) {
+            const {current} = element;
+            current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+            current.style.opacity = 1;
+        }
+    });
+    return {ref: element, style: {opacity: 0}};
+};
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -107,8 +135,16 @@ function App() {
     const confirmDelete = () => console.log('удаляем всё на свете...')
     const deleteAll = useConfirm('вы точно хотите всё удалить?', confirmDelete, abort)
     const {enablePrevent, disablePrevent} = usePreventLeave()
+    const pleaseStop = () => console.log('пожалуйста остановитесь...')
+    useBeforLeave(pleaseStop)
+    const fadeInH1 = useFadeIn(3, 2)
+    const fadeInP = useFadeIn(10, 5)
     return (
         <>
+            <div className={'greetings_container'}>
+                <h1 {...fadeInH1}>Hello!!!</h1>
+                <p {...fadeInP}>this is p</p>
+            </div>
             <div>Practice</div>
             <div className={'tabs_menu'}>
                 {content.map((section, index) => (
