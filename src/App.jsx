@@ -179,6 +179,24 @@ const useFullScreen = (callback) => {
     return {element, triggerFull, exitFull}
 }
 
+const useNotifications = (title, options) => {
+    if (!("Notifications" in window)) {
+        return console.log("мы не можем отправлять вам сообщения")
+    }
+    const triggerNotif = () => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification(title, options)
+                } else {
+                    return
+                }
+            })
+        }
+    }
+    return triggerNotif
+}
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -204,7 +222,7 @@ function App() {
         console.log(isFull ? "выводим на весь экран" : "не выводим на весь экран")
     }
     const {element, triggerFull, exitFull} = useFullScreen(onFullS)
-
+    const triggerNotif = useNotifications('могу ли я отправить уведомления')
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -239,6 +257,9 @@ function App() {
                 <img src="/nice.jpeg" alt=""/>
                 <button onClick={triggerFull}>во весь экран</button>
                 <button onClick={exitFull}>не показывать во весь экран</button>
+            </div>
+            <div>
+                <button onClick={triggerNotif}>Отправить уведомления</button>
             </div>
         </>
     )
