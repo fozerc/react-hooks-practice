@@ -157,22 +157,25 @@ const useScroll = () => {
 
 const useFullScreen = (callback) => {
     const element = useRef()
+    const runCallback = (isFull) => {
+        if (callback && typeof callback === 'function') {
+            callback(isFull)
+        }
+    }
     const triggerFull = () => {
         if (element.current) {
             element.current.requestFullscreen()
         }
-        if (callback && typeof callback === 'function') {
-            callback(true)
-        }
+        runCallback(true)
     }
+
     const exitFull = () => {
         if (element.current) {
             document.exitFullscreen()
-            if (callback && typeof callback === 'function') {
-                callback(false)
-            }
         }
+        runCallback(false)
     }
+
     return {element, triggerFull, exitFull}
 }
 
@@ -201,7 +204,7 @@ function App() {
         console.log(isFull ? "выводим на весь экран" : "не выводим на весь экран")
     }
     const {element, triggerFull, exitFull} = useFullScreen(onFullS)
-    console.log(document.fullscreenEnabled)
+
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -235,6 +238,7 @@ function App() {
             <div ref={element}>
                 <img src="/nice.jpeg" alt=""/>
                 <button onClick={triggerFull}>во весь экран</button>
+                <button onClick={exitFull}>не показывать во весь экран</button>
             </div>
         </>
     )
