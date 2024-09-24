@@ -143,14 +143,14 @@ const useNetwork = (onChange) => {
 const useScroll = () => {
     const [state, setState] = useState({
         x: 0,
-        y: 0
+        y: 0,
     })
-    const onScroll = () => {
-        setState({y: window.scrollY, x: window.scrollX})
+    const OnScroll = () => {
+        setState({x: window.scrollX, y: window.scrollY})
     }
     useEffect(() => {
-        document.addEventListener("scroll", onScroll)
-        return window.removeEventListener("scroll", onScroll)
+        window.addEventListener("scroll", OnScroll)
+        return () => window.removeEventListener("scroll", OnScroll)
     }, []);
     return state
 }
@@ -176,6 +176,7 @@ function App() {
     const handleOnLineChange = (onLine) => console.log(onLine ? 'мы только что перешли в онлайн' : "мы отключились от сети")
     const onLine = useNetwork(handleOnLineChange)
     const {y} = useScroll()
+    console.log(y)
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -204,7 +205,7 @@ function App() {
                 <button onClick={disablePrevent}>отключить защиту</button>
             </div>
             <div style={{height: "1000vh"}}>
-                <h1 style={{position: "fixed", color: y > 100 ? 'red' : 'blue'}}>проверка скролла</h1>
+                <h1 style={{position: "fixed", color: y > 100 ? "red" : "blue"}}>Проверка текста</h1>
             </div>
         </>
     )
