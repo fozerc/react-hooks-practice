@@ -155,6 +155,27 @@ const useScroll = () => {
     return state
 }
 
+const useFullScreen = (callback) => {
+    const element = useRef()
+    const triggerFull = () => {
+        if (element.current) {
+            element.current.requestFullscreen()
+        }
+        if (callback && typeof callback === 'function') {
+            callback(true)
+        }
+    }
+    const exitFull = () => {
+        if (element.current) {
+            document.exitFullscreen()
+            if (callback && typeof callback === 'function') {
+                callback(false)
+            }
+        }
+    }
+    return {element, triggerFull, exitFull}
+}
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -176,7 +197,11 @@ function App() {
     const handleOnLineChange = (onLine) => console.log(onLine ? 'мы только что перешли в онлайн' : "мы отключились от сети")
     const onLine = useNetwork(handleOnLineChange)
     const {y} = useScroll()
-    console.log(y)
+    const onFullS = (isFull) => {
+        console.log(isFull ? "выводим на весь экран" : "не выводим на весь экран")
+    }
+    const {element, triggerFull, exitFull} = useFullScreen(onFullS)
+    console.log(document.fullscreenEnabled)
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -204,8 +229,12 @@ function App() {
                 <button onClick={enablePrevent}>включить защиту</button>
                 <button onClick={disablePrevent}>отключить защиту</button>
             </div>
-            <div style={{height: "1000vh"}}>
+            <div style={{height: "60vh"}}>
                 <h1 style={{position: "fixed", color: y > 100 ? "red" : "blue"}}>Проверка текста</h1>
+            </div>
+            <div ref={element}>
+                <img src="/nice.jpeg" alt=""/>
+                <button onClick={triggerFull}>во весь экран</button>
             </div>
         </>
     )
