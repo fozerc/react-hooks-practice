@@ -140,6 +140,21 @@ const useNetwork = (onChange) => {
     return status
 }
 
+const useScroll = () => {
+    const [state, setState] = useState({
+        x: 0,
+        y: 0
+    })
+    const onScroll = () => {
+        setState({y: window.scrollY, x: window.scrollX})
+    }
+    useEffect(() => {
+        document.addEventListener("scroll", onScroll)
+        return window.removeEventListener("scroll", onScroll)
+    }, []);
+    return state
+}
+
 function App() {
     const titleUpdater = useTitle('Загрузка...')
     setInterval(() => titleUpdater('Загружено'), 5000)
@@ -160,6 +175,7 @@ function App() {
     const fadeInP = useFadeIn(10, 5)
     const handleOnLineChange = (onLine) => console.log(onLine ? 'мы только что перешли в онлайн' : "мы отключились от сети")
     const onLine = useNetwork(handleOnLineChange)
+    const {y} = useScroll()
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -186,6 +202,9 @@ function App() {
             <div className={"leave_container"}>
                 <button onClick={enablePrevent}>включить защиту</button>
                 <button onClick={disablePrevent}>отключить защиту</button>
+            </div>
+            <div style={{height: "1000vh"}}>
+                <h1 style={{position: "fixed", color: y > 100 ? 'red' : 'blue'}}>проверка скролла</h1>
             </div>
         </>
     )
