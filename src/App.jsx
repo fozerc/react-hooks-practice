@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 import './App.css'
+import {useAxios} from "./useAxios.js";
 
 const content = [
     {
@@ -223,6 +224,10 @@ function App() {
     }
     const {element, triggerFull, exitFull} = useFullScreen(onFullS)
     const triggerNotif = useNotifications('могу ли я отправить уведомления')
+    const {loading, error, data, refetch } = useAxios({
+        url: "https://catfact.ninja/fact"
+    })
+    console.log(`Loading: ${loading},\n Error: ${error}\n Data: ${JSON.stringify(data)}`)
     return (
         <>
             <h1>{onLine ? "Онлайн" : "Офлайн"}</h1>
@@ -261,6 +266,7 @@ function App() {
             <div>
                 <button onClick={triggerNotif}>Отправить уведомления</button>
             </div>
+            <button onClick={refetch}>перезагрузить данные</button>
         </>
     )
 }
